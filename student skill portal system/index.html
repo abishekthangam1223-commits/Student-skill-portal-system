@@ -1,0 +1,1007 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkillSync | Student Skill Portal System</title>
+    <meta name="description" content="Next-generation Student Skill Portal with interactive skill matrix, verified credentials, project showcase, and peer discovery leaderboard.">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚡</text></svg>">
+    
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="styles/main.css">
+</head>
+<body>
+
+    <!-- SVG Linear Gradients Definition -->
+    <svg style="width:0;height:0;position:absolute;" aria-hidden="true" focusable="false">
+        <defs>
+            <linearGradient id="scoreGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#6366f1" />
+                <stop offset="50%" stop-color="#8b5cf6" />
+                <stop offset="100%" stop-color="#06b6d4" />
+            </linearGradient>
+        </defs>
+    </svg>
+
+    <!-- Navigation Header -->
+    <header class="navbar" id="appNavbar">
+        <div class="container navbar-inner">
+            
+            <!-- Logo & Brand -->
+            <div class="brand" id="brandLogo" onclick="window.app.switchTab('dashboard')">
+                <div class="brand-icon">
+                    <span id="brandIconSlot"></span>
+                </div>
+                <div class="brand-text">
+                    <span class="brand-title">SkillSync</span>
+                    <span class="brand-subtitle">Student Skill Portal</span>
+                </div>
+            </div>
+
+            <!-- Main Nav Links -->
+            <nav class="nav-links" id="mainNavLinks">
+                <button class="nav-link active" data-tab="dashboard" id="navDashboard">
+                    <span class="nav-icon" data-icon="layout-dashboard"></span>
+                    <span>Dashboard</span>
+                </button>
+                <button class="nav-link" data-tab="skills" id="navSkills">
+                    <span class="nav-icon" data-icon="award"></span>
+                    <span>Skill Matrix</span>
+                </button>
+                <button class="nav-link" data-tab="projects" id="navProjects">
+                    <span class="nav-icon" data-icon="folder-git"></span>
+                    <span>Projects</span>
+                </button>
+                <button class="nav-link" data-tab="certifications" id="navCerts">
+                    <span class="nav-icon" data-icon="shield-check"></span>
+                    <span>Certifications</span>
+                </button>
+                <button class="nav-link" data-tab="leaderboard" id="navLeaderboard">
+                    <span class="nav-icon" data-icon="trophy"></span>
+                    <span>Leaderboard</span>
+                </button>
+                <button class="nav-link" data-tab="roadmap" id="navRoadmap">
+                    <span class="nav-icon" data-icon="compass"></span>
+                    <span>Roadmap</span>
+                </button>
+            </nav>
+
+            <!-- Search Bar in Navbar -->
+            <div class="nav-search" id="navbarSearchContainer">
+                <span class="search-icon" data-icon="search"></span>
+                <input type="text" class="search-input" id="globalSearchInput" placeholder="Search skills, projects, peers..." autocomplete="off">
+                <span class="search-shortcut">/</span>
+            </div>
+
+            <!-- Navbar Actions & Profile -->
+            <div class="nav-actions">
+                <!-- Theme Toggle -->
+                <button class="btn-icon" id="themeToggleBtn" title="Toggle Light / Dark Theme" aria-label="Toggle Theme">
+                    <span id="themeIconSlot"></span>
+                </button>
+
+                <!-- Notifications Button -->
+                <button class="btn-icon" id="notificationBtn" title="Notifications" aria-label="View notifications">
+                    <span data-icon="bell"></span>
+                    <span class="notification-badge"></span>
+                </button>
+
+                <!-- Notifications Popover Menu -->
+                <div class="dropdown-menu notification-menu" id="notificationMenu">
+                    <div class="dropdown-header">
+                        <div class="dropdown-user-name">Activity Notifications</div>
+                        <div class="dropdown-user-role">Real-time verification & peer alerts</div>
+                    </div>
+                    <div id="notificationsList">
+                        <!-- Populated by JavaScript -->
+                    </div>
+                </div>
+
+                <!-- User Profile Avatar & Dropdown -->
+                <div class="nav-profile" id="profileDropdownBtn">
+                    <div class="avatar-wrapper">
+                        <img src="" alt="Alex Morgan Avatar" class="nav-avatar" id="navUserAvatar">
+                        <span class="online-dot" title="Active Now"></span>
+                    </div>
+
+                    <!-- Profile Dropdown Menu -->
+                    <div class="dropdown-menu" id="profileMenu">
+                        <div class="dropdown-header">
+                            <div class="dropdown-user-name" id="menuUserName">Alex Morgan</div>
+                            <div class="dropdown-user-role" id="menuUserMajor">CS & AI Honors • 2027</div>
+                        </div>
+                        <a href="https://linkedin.com/in/alex-morgan-skillsync" target="_blank" rel="noopener noreferrer" class="dropdown-item">
+                            <span data-icon="linkedin"></span>
+                            <span>LinkedIn Profile</span>
+                        </a>
+                        <a href="https://github.com/alexmorgan-dev" target="_blank" rel="noopener noreferrer" class="dropdown-item">
+                            <span data-icon="github"></span>
+                            <span>GitHub Profile</span>
+                        </a>
+                        <a href="https://github.com/alexmorgan-dev/student-skill-portal" target="_blank" rel="noopener noreferrer" class="dropdown-item">
+                            <span data-icon="folder-git"></span>
+                            <span>Portal Repository</span>
+                        </a>
+                        <button class="dropdown-item" onclick="window.app.openExportModal()" style="width:100%; text-align:left;">
+                            <span data-icon="share-2"></span>
+                            <span>Export / Share Portfolio</span>
+                        </button>
+                        <button class="dropdown-item" onclick="window.app.resetPortalData()" style="width:100%; text-align:left; color:var(--warning);">
+                            <span data-icon="sparkles"></span>
+                            <span>Reset Mock Data</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Mobile Hamburger Toggle -->
+                <button class="btn-icon mobile-toggle" id="mobileMenuBtn" aria-label="Toggle navigation menu">
+                    <span data-icon="menu"></span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Mobile Drawer Navigation -->
+    <div class="dropdown-menu" id="mobileDrawer" style="position:fixed; top:72px; left:0; right:0; width:100%; border-radius:0; padding:1.25rem; display:none;">
+        <div style="display:flex; flex-direction:column; gap:0.6rem;">
+            <button class="btn-action" onclick="window.app.switchTab('dashboard')">Dashboard</button>
+            <button class="btn-action" onclick="window.app.switchTab('skills')">Skill Matrix</button>
+            <button class="btn-action" onclick="window.app.switchTab('projects')">Project Showcase</button>
+            <button class="btn-action" onclick="window.app.switchTab('certifications')">Certifications & Badges</button>
+            <button class="btn-action" onclick="window.app.switchTab('leaderboard')">Leaderboard & Peers</button>
+            <button class="btn-action" onclick="window.app.switchTab('roadmap')">Career Roadmap</button>
+        </div>
+    </div>
+
+    <!-- Main Container View -->
+    <main class="container main-content" id="mainContent">
+
+        <!-- ================================================================= -->
+        <!-- VIEW 1: HERO / OVERVIEW DASHBOARD -->
+        <!-- ================================================================= -->
+        <section class="page-view active" id="view-dashboard">
+            
+            <!-- Hero Greeting Banner -->
+            <div class="hero-banner">
+                <div class="hero-content">
+                    <div class="hero-intro">
+                        <div class="greeting-pill">
+                            <span class="pulse-dot"></span>
+                            <span>Verified Student Profile • Fall 2026</span>
+                        </div>
+                        <h1 class="hero-title" id="heroGreeting">Welcome back, Alex!</h1>
+                        <p class="hero-tagline" id="heroTagline">
+                            Senior Computer Science & AI Honors | Aspiring Full-Stack Machine Learning Engineer & Cloud Architect.
+                        </p>
+                        
+                        <div class="hero-meta">
+                            <span class="meta-item">
+                                <span data-icon="graduation-cap"></span>
+                                <span id="heroUniversity">Institute of Technology & Applied Sciences</span>
+                            </span>
+                            <span class="meta-item">
+                                <span data-icon="flame"></span>
+                                <span id="heroStreak">32-Day Streak</span>
+                            </span>
+                            <span class="meta-item">
+                                <span data-icon="award"></span>
+                                <span id="heroCohort">Class of 2027</span>
+                            </span>
+                        </div>
+
+                        <!-- Social & External Links (LinkedIn & GitHub) -->
+                        <div class="social-links">
+                            <a href="https://linkedin.com/in/alex-morgan-skillsync" target="_blank" rel="noopener noreferrer" class="btn-social linkedin" id="heroLinkedInLink">
+                                <span data-icon="linkedin"></span>
+                                <span>LinkedIn Profile</span>
+                                <span data-icon="arrow-up-right" style="width:14px; height:14px;"></span>
+                            </a>
+                            <a href="https://github.com/alexmorgan-dev" target="_blank" rel="noopener noreferrer" class="btn-social github" id="heroGithubLink">
+                                <span data-icon="github"></span>
+                                <span>GitHub Repository</span>
+                                <span data-icon="arrow-up-right" style="width:14px; height:14px;"></span>
+                            </a>
+                            <button class="btn-social" onclick="window.app.openExportModal()" title="Export Portfolio as PDF / Post">
+                                <span data-icon="share-2"></span>
+                                <span>Share Portfolio</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Readiness Score Widget -->
+                    <div class="readiness-widget">
+                        <div class="radial-score-wrapper">
+                            <svg class="score-svg" width="120" height="120" viewBox="0 0 120 120">
+                                <circle class="score-bg-circle" cx="60" cy="60" r="48" fill="transparent"/>
+                                <circle class="score-progress-circle" id="radialProgressCircle" cx="60" cy="60" r="48" fill="transparent"
+                                        stroke-dasharray="301.59" stroke-dashoffset="48.25"/>
+                            </svg>
+                            <div class="score-text-inner">
+                                <div class="score-number" id="radialScoreText">84%</div>
+                                <div class="score-label">Job Ready</div>
+                            </div>
+                        </div>
+
+                        <div class="readiness-info">
+                            <div class="readiness-badge">
+                                <span data-icon="badge-check"></span>
+                                <span>Industry Calibrated</span>
+                            </div>
+                            <div class="readiness-title">Employability Readiness</div>
+                            
+                            <div class="readiness-breakdown">
+                                <div>
+                                    <div class="readiness-row">
+                                        <span>Technical Mastery</span>
+                                        <strong id="metricTech">88%</strong>
+                                    </div>
+                                    <div class="readiness-row-bar">
+                                        <div class="readiness-row-fill" id="barTech" style="width: 88%;"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="readiness-row">
+                                        <span>Practical Portfolio</span>
+                                        <strong id="metricPortfolio">85%</strong>
+                                    </div>
+                                    <div class="readiness-row-bar">
+                                        <div class="readiness-row-fill" id="barPortfolio" style="width: 85%; background: linear-gradient(135deg, #06b6d4, #3b82f6);"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="readiness-row">
+                                        <span>Soft Skills & Teamwork</span>
+                                        <strong id="metricSoft">78%</strong>
+                                    </div>
+                                    <div class="readiness-row-bar">
+                                        <div class="readiness-row-fill" id="barSoft" style="width: 78%; background: linear-gradient(135deg, #10b981, #059669);"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Stat Widgets -->
+            <div class="stats-grid">
+                <div class="stat-card" style="--card-accent: #6366f1; --icon-bg: rgba(99, 102, 241, 0.15); --icon-color: #818cf8;">
+                    <div class="stat-icon">
+                        <span data-icon="badge-check"></span>
+                    </div>
+                    <div class="stat-details">
+                        <div class="stat-value" id="statVerifiedSkills">18</div>
+                        <div class="stat-title">Skills Verified</div>
+                        <div class="stat-trend">
+                            <span data-icon="trending-up" style="width:14px; height:14px;"></span>
+                            <span>+3 this month</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="stat-card" style="--card-accent: #06b6d4; --icon-bg: rgba(6, 182, 212, 0.15); --icon-color: #22d3ee;">
+                    <div class="stat-icon">
+                        <span data-icon="book-open"></span>
+                    </div>
+                    <div class="stat-details">
+                        <div class="stat-value" id="statActiveCourses">4</div>
+                        <div class="stat-title">Active Courses</div>
+                        <div class="stat-trend" style="color:var(--text-secondary);">
+                            <span>2 Final Capstones</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="stat-card" style="--card-accent: #10b981; --icon-bg: rgba(16, 185, 129, 0.15); --icon-color: #34d399;">
+                    <div class="stat-icon">
+                        <span data-icon="folder-git"></span>
+                    </div>
+                    <div class="stat-details">
+                        <div class="stat-value" id="statCapstoneProjects">3</div>
+                        <div class="stat-title">Capstone Projects</div>
+                        <div class="stat-trend">
+                            <span data-icon="star" style="width:14px; height:14px;"></span>
+                            <span>344 GitHub Stars</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="stat-card" style="--card-accent: #f59e0b; --icon-bg: rgba(245, 158, 11, 0.15); --icon-color: #fbbf24;">
+                    <div class="stat-icon">
+                        <span data-icon="trophy"></span>
+                    </div>
+                    <div class="stat-details">
+                        <div class="stat-value" id="statGlobalRank">#12</div>
+                        <div class="stat-title">Global Campus Rank</div>
+                        <div class="stat-trend">
+                            <span>Top 1% Tier</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dashboard Secondary Split: Recent Activity & Quick Actions -->
+            <div class="dashboard-grid">
+                <!-- Recent Activity Feed -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title-group">
+                            <span data-icon="sparkles" style="color:var(--primary-light);"></span>
+                            <h2 class="card-title">Recent Activity & Verification Feed</h2>
+                        </div>
+                        <span class="card-subtitle">Real-time status updates</span>
+                    </div>
+                    
+                    <div class="activity-list" id="dashboardActivityList">
+                        <!-- Populated by JavaScript -->
+                    </div>
+                </div>
+
+                <!-- Competency Radar Pillar Card -->
+                <div class="card" style="display:flex; flex-direction:column; align-items:center; text-align:center;">
+                    <div class="card-header" style="width:100%;">
+                        <div class="card-title-group">
+                            <span data-icon="compass" style="color:var(--primary-light);"></span>
+                            <h2 class="card-title">Competency Radar</h2>
+                        </div>
+                        <span class="card-subtitle">6 Pillars</span>
+                    </div>
+                    <div style="position:relative; width:100%; display:flex; justify-content:center; align-items:center; padding:0.25rem 0;">
+                        <canvas id="competencyRadarCanvas" style="max-width:100%;"></canvas>
+                    </div>
+                    <div style="font-size:0.75rem; color:var(--text-muted); margin-top:0.35rem;">
+                        Hover vertices for calibrated domain percentiles
+                    </div>
+                </div>
+
+                <!-- Quick Action Panels & Top Skills Spotlight -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title-group">
+                            <span data-icon="cpu" style="color:var(--secondary);"></span>
+                            <h2 class="card-title">Quick Actions</h2>
+                        </div>
+                    </div>
+
+                    <div class="quick-actions-list">
+                        <button class="btn-action" onclick="window.assessmentEngine.startAssessment('python')">
+                            <div class="btn-action-left">
+                                <span data-icon="sparkles" style="color:#fbbf24;"></span>
+                                <span>Take Skill Assessment Quiz</span>
+                            </div>
+                            <span data-icon="chevron-right" style="width:16px; height:16px;"></span>
+                        </button>
+
+                        <button class="btn-action" onclick="window.app.openAddSkillModal()">
+                            <div class="btn-action-left">
+                                <span data-icon="plus" style="color:var(--primary-light);"></span>
+                                <span>Add New Skill</span>
+                            </div>
+                            <span data-icon="chevron-right" style="width:16px; height:16px;"></span>
+                        </button>
+
+                        <button class="btn-action" onclick="window.app.openVerificationModal()">
+                            <div class="btn-action-left">
+                                <span data-icon="shield-check" style="color:var(--success);"></span>
+                                <span>Request Faculty Verification</span>
+                            </div>
+                            <span data-icon="chevron-right" style="width:16px; height:16px;"></span>
+                        </button>
+
+                        <button class="btn-action" onclick="window.app.openAddProjectModal()">
+                            <div class="btn-action-left">
+                                <span data-icon="folder-git" style="color:var(--secondary);"></span>
+                                <span>Publish Portfolio Project</span>
+                            </div>
+                            <span data-icon="chevron-right" style="width:16px; height:16px;"></span>
+                        </button>
+
+                        <button class="btn-action" onclick="window.app.switchTab('roadmap')">
+                            <div class="btn-action-left">
+                                <span data-icon="compass" style="color:var(--warning);"></span>
+                                <span>View AI Career Roadmap</span>
+                            </div>
+                            <span data-icon="chevron-right" style="width:16px; height:16px;"></span>
+                        </button>
+
+                        <button class="btn-action" onclick="window.app.openExportModal()">
+                            <div class="btn-action-left">
+                                <span data-icon="share-2" style="color:var(--primary-light);"></span>
+                                <span>Export Verified Summary</span>
+                            </div>
+                            <span data-icon="chevron-right" style="width:16px; height:16px;"></span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- ================================================================= -->
+        <!-- VIEW 2: INTERACTIVE SKILL MATRIX & ROADMAP -->
+        <!-- ================================================================= -->
+        <section class="page-view" id="view-skills">
+            
+            <div class="section-header">
+                <div>
+                    <h1 class="section-title">Interactive Skill Matrix</h1>
+                    <p class="section-subtitle">Verified proficiencies, peer endorsements, and academic validation</p>
+                </div>
+                <div style="display:flex; gap:0.75rem;">
+                    <button class="btn btn-secondary" onclick="window.app.openVerificationModal()">
+                        <span data-icon="shield-check"></span>
+                        <span>Request Verification</span>
+                    </button>
+                    <button class="btn btn-primary" onclick="window.app.openAddSkillModal()">
+                        <span data-icon="plus"></span>
+                        <span>Add Skill</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Filter Controls Bar -->
+            <div class="filter-bar">
+                <div class="pill-filters" id="skillCategoryPills">
+                    <button class="filter-pill active" data-category="all">All Skills</button>
+                    <button class="filter-pill" data-category="technical">Technical</button>
+                    <button class="filter-pill" data-category="soft">Soft Skills</button>
+                    <button class="filter-pill" data-category="emerging">Emerging Tech</button>
+                </div>
+
+                <div class="select-filters">
+                    <select class="custom-select" id="skillProficiencyFilter">
+                        <option value="all">All Proficiencies</option>
+                        <option value="Beginner">Beginner</option>
+                        <option value="Intermediate">Intermediate</option>
+                        <option value="Advanced">Advanced</option>
+                    </select>
+
+                    <select class="custom-select" id="skillStatusFilter">
+                        <option value="all">All Statuses</option>
+                        <option value="verified">Verified Only</option>
+                        <option value="in-progress">In Progress</option>
+                        <option value="pending">Pending Verification</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Skills Grid -->
+            <div class="skills-grid" id="skillsGridContainer">
+                <!-- Dynamically populated by JavaScript -->
+            </div>
+
+        </section>
+
+        <!-- ================================================================= -->
+        <!-- VIEW 3: PROJECT & PORTFOLIO SHOWCASE -->
+        <!-- ================================================================= -->
+        <section class="page-view" id="view-projects">
+            
+            <div class="section-header">
+                <div>
+                    <h1 class="section-title">Project & Portfolio Showcase</h1>
+                    <p class="section-subtitle">Real-world systems, capstones, and open-source contributions</p>
+                </div>
+                <button class="btn btn-primary" onclick="window.app.openAddProjectModal()">
+                    <span data-icon="plus"></span>
+                    <span>Upload New Project</span>
+                </button>
+            </div>
+
+            <!-- Project Category Filter -->
+            <div class="filter-bar">
+                <div class="pill-filters" id="projectCategoryPills">
+                    <button class="filter-pill active" data-category="all">All Projects</button>
+                    <button class="filter-pill" data-category="AI & Healthcare">AI & Healthcare</button>
+                    <button class="filter-pill" data-category="Systems & Cloud">Systems & Cloud</button>
+                    <button class="filter-pill" data-category="DevOps & Tooling">DevOps & Tooling</button>
+                    <button class="filter-pill" data-category="Robotics & CV">Robotics & CV</button>
+                </div>
+            </div>
+
+            <!-- Projects Grid -->
+            <div class="projects-grid" id="projectsGridContainer">
+                <!-- Dynamically populated by JavaScript -->
+            </div>
+
+        </section>
+
+        <!-- ================================================================= -->
+        <!-- VIEW 4: CERTIFICATIONS & DIGITAL BADGES -->
+        <!-- ================================================================= -->
+        <section class="page-view" id="view-certifications">
+            
+            <div class="section-header">
+                <div>
+                    <h1 class="section-title">Certifications & Digital Credentials</h1>
+                    <p class="section-subtitle">Cryptographically verified course certificates, cloud accreditations, and achievement honors</p>
+                </div>
+                <button class="btn btn-primary" onclick="window.app.openClaimCertModal()">
+                    <span data-icon="plus"></span>
+                    <span>Claim Certificate</span>
+                </button>
+            </div>
+
+            <!-- Section 1: Industry Certifications -->
+            <div style="margin-bottom: 3rem;">
+                <div style="display:flex; align-items:center; gap:0.5rem; margin-bottom:1.25rem;">
+                    <span data-icon="shield-check" style="color:var(--success);"></span>
+                    <h2 style="font-family:var(--font-heading); font-size:1.35rem; font-weight:700;">Verified Industry Credentials</h2>
+                </div>
+                <div class="certs-grid" id="certsGridContainer">
+                    <!-- Populated by JavaScript -->
+                </div>
+            </div>
+
+            <!-- Section 2: Achievement Badges -->
+            <div>
+                <div style="display:flex; align-items:center; gap:0.5rem; margin-bottom:1.25rem;">
+                    <span data-icon="award" style="color:var(--warning);"></span>
+                    <h2 style="font-family:var(--font-heading); font-size:1.35rem; font-weight:700;">Digital Achievement Badges</h2>
+                </div>
+                <div class="badges-grid" id="badgesGridContainer">
+                    <!-- Populated by JavaScript -->
+                </div>
+            </div>
+
+        </section>
+
+        <!-- ================================================================= -->
+        <!-- VIEW 5: LEADERBOARD & PEER DISCOVERY -->
+        <!-- ================================================================= -->
+        <section class="page-view" id="view-leaderboard">
+            
+            <div class="section-header">
+                <div>
+                    <h1 class="section-title">Leaderboard & Peer Discovery</h1>
+                    <p class="section-subtitle">Top students ranked by verified skills, peer contributions, and challenge completions</p>
+                </div>
+                <div class="pill-filters" id="leaderboardTimePills">
+                    <button class="filter-pill active" data-time="all-time">All-Time</button>
+                    <button class="filter-pill" data-time="monthly">This Month</button>
+                    <button class="filter-pill" data-time="weekly">This Week</button>
+                </div>
+            </div>
+
+            <!-- Top 3 Podium Cards -->
+            <div class="podium-container" id="leaderboardPodium">
+                <!-- Dynamically populated by JavaScript -->
+            </div>
+
+            <!-- Full Ranking Table -->
+            <div class="leaderboard-table-card">
+                <div class="table-responsive">
+                    <table class="leaderboard-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 80px;">Rank</th>
+                                <th>Student Peer</th>
+                                <th>Specialization</th>
+                                <th>Verified Skills</th>
+                                <th>Badges</th>
+                                <th>Peer Score</th>
+                                <th style="text-align: right;">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="leaderboardTableBody">
+                            <!-- Dynamically populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- ================================================================= -->
+        <!-- VIEW 6: CAREER ROADMAP & MILESTONES -->
+        <!-- ================================================================= -->
+        <section class="page-view" id="view-roadmap">
+            
+            <div class="section-header">
+                <div>
+                    <h1 class="section-title">Interactive Career Roadmaps</h1>
+                    <p class="section-subtitle">Curated curriculum tracks and step-by-step milestones to job readiness</p>
+                </div>
+            </div>
+
+            <div id="roadmapsContainer">
+                <!-- Dynamically populated by JavaScript -->
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- ================================================================= -->
+    <!-- MODALS -->
+    <!-- ================================================================= -->
+
+    <!-- Modal 1: Add New Skill -->
+    <div class="modal-overlay" id="modalAddSkill">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3 class="modal-title">Add New Skill</h3>
+                <button class="modal-close-btn" onclick="window.app.closeModal('modalAddSkill')">
+                    <span data-icon="x"></span>
+                </button>
+            </div>
+            <form id="formAddSkill" onsubmit="window.app.handleAddSkill(event)">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label class="form-label" for="newSkillName">Skill Name *</label>
+                        <input type="text" id="newSkillName" class="form-input" placeholder="e.g. PyTorch Deep Learning, GraphQL, Rust" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="newSkillCategory">Category *</label>
+                        <select id="newSkillCategory" class="form-select">
+                            <option value="technical">Technical</option>
+                            <option value="soft">Soft Skills</option>
+                            <option value="emerging">Emerging Tech</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="newSkillProficiency">Proficiency Level *</label>
+                        <select id="newSkillProficiency" class="form-select">
+                            <option value="Beginner">Beginner (1 - 40%)</option>
+                            <option value="Intermediate">Intermediate (41 - 75%)</option>
+                            <option value="Advanced" selected>Advanced (76 - 100%)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="newSkillProgress">Proficiency Mastery: <span id="progressSliderVal" style="color:var(--primary-light);">80%</span></label>
+                        <div class="range-slider-group">
+                            <input type="range" id="newSkillProgress" class="range-slider" min="10" max="100" value="80" 
+                                   oninput="document.getElementById('progressSliderVal').textContent = this.value + '%'">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="newSkillDesc">Competency Summary</label>
+                        <textarea id="newSkillDesc" class="form-textarea" placeholder="Describe the practical applications or coursework related to this skill..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="window.app.closeModal('modalAddSkill')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Add Skill to Portfolio</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal 2: Request Skill Verification -->
+    <div class="modal-overlay" id="modalVerification">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3 class="modal-title">Request Skill Verification</h3>
+                <button class="modal-close-btn" onclick="window.app.closeModal('modalVerification')">
+                    <span data-icon="x"></span>
+                </button>
+            </div>
+            <form id="formVerification" onsubmit="window.app.handleRequestVerification(event)">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label class="form-label" for="verifySkillSelect">Select Skill to Verify *</label>
+                        <select id="verifySkillSelect" class="form-select" required>
+                            <!-- Dynamically populated -->
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="verifyAssessorType">Verification Method *</label>
+                        <select id="verifyAssessorType" class="form-select">
+                            <option value="Faculty Review">Faculty Advisor Evaluation (e.g. Prof. Davis)</option>
+                            <option value="Proctored Assessment">Standardized Assessment / Coding Sandbox</option>
+                            <option value="Capstone Artifact">Capstone GitHub Repository Audit</option>
+                            <option value="Industry Certificate">Industry Vendor Credential Match</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="verifyProof">Evidence / Notes / Submission Link *</label>
+                        <textarea id="verifyProof" class="form-textarea" placeholder="Paste link to GitHub repository, test report, or faculty mentor notes..." required></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="window.app.closeModal('modalVerification')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Submit for Verification</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal 3: Add New Project -->
+    <div class="modal-overlay" id="modalAddProject">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3 class="modal-title">Publish Portfolio Project</h3>
+                <button class="modal-close-btn" onclick="window.app.closeModal('modalAddProject')">
+                    <span data-icon="x"></span>
+                </button>
+            </div>
+            <form id="formAddProject" onsubmit="window.app.handleAddProject(event)">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label class="form-label" for="projTitle">Project Title *</label>
+                        <input type="text" id="projTitle" class="form-input" placeholder="e.g. NeuroFlow - Realtime Brainwave Visualizer" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="projTagline">Tagline / One-liner *</label>
+                        <input type="text" id="projTagline" class="form-input" placeholder="e.g. High-throughput EEG feature clustering via WebGL" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="projCategory">Domain / Category *</label>
+                        <select id="projCategory" class="form-select">
+                            <option value="AI & Healthcare">AI & Healthcare</option>
+                            <option value="Systems & Cloud">Systems & Cloud</option>
+                            <option value="DevOps & Tooling">DevOps & Tooling</option>
+                            <option value="Robotics & CV">Robotics & CV</option>
+                            <option value="Web Engineering">Web Engineering</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="projTags">Tech Stack Tags (Comma separated) *</label>
+                        <input type="text" id="projTags" class="form-input" placeholder="e.g. React, Python, FastAPI, Docker, PyTorch" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="projGithub">GitHub Repository Link *</label>
+                        <input type="url" id="projGithub" class="form-input" placeholder="https://github.com/alexmorgan-dev/my-project" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="projDemo">Live Demo / Deployment Link</label>
+                        <input type="url" id="projDemo" class="form-input" placeholder="https://my-project.demo.app">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="projDesc">Detailed Description</label>
+                        <textarea id="projDesc" class="form-textarea" placeholder="Explain the system architecture, challenges solved, and measurable impact..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="window.app.closeModal('modalAddProject')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Publish Project</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal 4: Digital Certificate Preview Modal -->
+    <div class="modal-overlay" id="modalCertPreview">
+        <div class="modal-box" style="max-width: 650px;">
+            <div class="modal-header">
+                <h3 class="modal-title">Verified Credential Record</h3>
+                <button class="modal-close-btn" onclick="window.app.closeModal('modalCertPreview')">
+                    <span data-icon="x"></span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="cert-preview-card">
+                    <div class="cert-preview-seal">
+                        <span data-icon="shield-check" style="width:36px; height:36px;"></span>
+                    </div>
+                    <div style="font-size:0.75rem; text-transform:uppercase; letter-spacing:0.1em; color:var(--text-muted); margin-bottom:0.5rem;">
+                        Official Certification of Competency
+                    </div>
+                    <h2 id="certPreviewTitle" style="font-family:var(--font-heading); font-size:1.45rem; font-weight:800; margin-bottom:0.4rem; color:#ffffff;">
+                        AWS Certified Solutions Architect – Associate
+                    </h2>
+                    <div id="certPreviewIssuer" style="color:var(--primary-light); font-weight:700; font-size:0.95rem; margin-bottom:1.5rem;">
+                        Amazon Web Services (AWS)
+                    </div>
+
+                    <div style="font-size:0.85rem; color:var(--text-secondary); margin-bottom:1.5rem; line-height:1.6;">
+                        This digital credential certifies that <strong style="color:#ffffff;">Alex Morgan</strong> has successfully satisfied all examination requirements and demonstrated applied proficiency in cloud infrastructure design, security, and scalable systems.
+                    </div>
+
+                    <div style="display:flex; justify-content:space-around; background:rgba(0,0,0,0.3); border-radius:8px; padding:0.85rem; margin-bottom:1.25rem; font-size:0.8rem;">
+                        <div>
+                            <span style="color:var(--text-muted); display:block;">Issued Date</span>
+                            <strong id="certPreviewDate" style="color:var(--text-primary);">August 2026</strong>
+                        </div>
+                        <div>
+                            <span style="color:var(--text-muted); display:block;">Status</span>
+                            <strong style="color:var(--success);">Active & Verified</strong>
+                        </div>
+                        <div>
+                            <span style="color:var(--text-muted); display:block;">Credential ID</span>
+                            <code id="certPreviewId" style="font-family:var(--font-mono); color:var(--primary-light);">AWS-SAA-840912</code>
+                        </div>
+                    </div>
+
+                    <div style="font-size:0.72rem; color:var(--text-muted); font-family:var(--font-mono);">
+                        Cryptographic Verification SHA-256: 8f4a0c8b9912e9b0682136a8e3f940b171ec
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="window.app.copyCertLink()">
+                    <span data-icon="copy"></span>
+                    <span>Copy Verification Link</span>
+                </button>
+                <a id="certExternalLink" href="#" target="_blank" rel="noopener noreferrer" class="btn btn-primary">
+                    <span data-icon="external-link"></span>
+                    <span>Issuer Verification Portal</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal 5: Claim / Add Certificate -->
+    <div class="modal-overlay" id="modalClaimCert">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3 class="modal-title">Claim Digital Certificate</h3>
+                <button class="modal-close-btn" onclick="window.app.closeModal('modalClaimCert')">
+                    <span data-icon="x"></span>
+                </button>
+            </div>
+            <form id="formClaimCert" onsubmit="window.app.handleClaimCert(event)">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label class="form-label" for="claimCertTitle">Certificate Name *</label>
+                        <input type="text" id="claimCertTitle" class="form-input" placeholder="e.g. Kubernetes Certified Administrator (CKA)" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="claimCertIssuer">Issuing Body *</label>
+                        <input type="text" id="claimCertIssuer" class="form-input" placeholder="e.g. Linux Foundation, Microsoft, Oracle" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="claimCertId">Credential ID *</label>
+                        <input type="text" id="claimCertId" class="form-input" placeholder="e.g. CKA-89042-HONORS" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="claimCertUrl">Verification URL</label>
+                        <input type="url" id="claimCertUrl" class="form-input" placeholder="https://credentials.issuer.org/verify/...">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="window.app.closeModal('modalClaimCert')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Verify & Add Credential</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal 6: Peer Profile Preview & Endorse Modal -->
+    <div class="modal-overlay" id="modalPeerProfile">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3 class="modal-title">Student Peer Profile</h3>
+                <button class="modal-close-btn" onclick="window.app.closeModal('modalPeerProfile')">
+                    <span data-icon="x"></span>
+                </button>
+            </div>
+            <div class="modal-body" id="peerProfileBody">
+                <!-- Populated dynamically -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="window.app.closeModal('modalPeerProfile')">Close</button>
+                <button class="btn btn-primary" id="endorsePeerActionBtn">
+                    <span data-icon="star"></span>
+                    <span>Endorse Student Skills</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal 7: Export / Share Portfolio Modal -->
+    <div class="modal-overlay" id="modalExport">
+        <div class="modal-box" style="max-width: 620px;">
+            <div class="modal-header">
+                <h3 class="modal-title">Export & Share Portfolio</h3>
+                <button class="modal-close-btn" onclick="window.app.closeModal('modalExport')">
+                    <span data-icon="x"></span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">LinkedIn Shareable Snippet</label>
+                    <textarea class="form-textarea" id="linkedinShareText" readonly style="font-family:var(--font-mono); font-size:0.8rem; height:110px;"></textarea>
+                    <div style="display:flex; justify-content:flex-end; margin-top:0.4rem;">
+                        <button class="btn btn-secondary btn-sm" onclick="window.app.copyText('linkedinShareText')">
+                            <span data-icon="copy"></span>
+                            <span>Copy LinkedIn Post</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">GitHub README Embed Badge Markdown</label>
+                    <textarea class="form-textarea" id="githubBadgeSnippet" readonly style="font-family:var(--font-mono); font-size:0.8rem; height:80px;"></textarea>
+                    <div style="display:flex; justify-content:flex-end; margin-top:0.4rem;">
+                        <button class="btn btn-secondary btn-sm" onclick="window.app.copyText('githubBadgeSnippet')">
+                            <span data-icon="copy"></span>
+                            <span>Copy Markdown Badge</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="window.print()">
+                    <span data-icon="download"></span>
+                    <span>Print / Save as PDF</span>
+                </button>
+                <button class="btn btn-primary" onclick="window.app.closeModal('modalExport')">Done</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal 8: Interactive Skill Assessment Quiz -->
+    <div class="modal-overlay" id="modalAssessmentQuiz">
+        <div class="modal-box" style="max-width: 600px;">
+            <div class="modal-header">
+                <div style="display:flex; align-items:center; gap:0.5rem;">
+                    <span data-icon="sparkles" style="color:#fbbf24;"></span>
+                    <h3 class="modal-title">Diagnostic Skill Assessment</h3>
+                </div>
+                <button class="modal-close-btn" onclick="window.app.closeModal('modalAssessmentQuiz')">
+                    <span data-icon="x"></span>
+                </button>
+            </div>
+            <div class="modal-body" id="assessmentQuestionBody">
+                <!-- Dynamically rendered by assessmentEngine -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="window.app.closeModal('modalAssessmentQuiz')">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container footer-inner">
+            <div class="footer-top">
+                <div class="brand">
+                    <div class="brand-icon" style="width:34px; height:34px;">
+                        <span data-icon="sparkles"></span>
+                    </div>
+                    <div class="brand-text">
+                        <span class="brand-title" style="font-size:1.1rem;">SkillSync</span>
+                        <span class="brand-subtitle">Student Skill Portal System</span>
+                    </div>
+                </div>
+
+                <div class="footer-nav">
+                    <a href="https://linkedin.com/in/alex-morgan-skillsync" target="_blank" rel="noopener noreferrer" style="display:flex; align-items:center; gap:0.4rem;">
+                        <span data-icon="linkedin"></span>
+                        <span>LinkedIn</span>
+                    </a>
+                    <a href="https://github.com/alexmorgan-dev" target="_blank" rel="noopener noreferrer" style="display:flex; align-items:center; gap:0.4rem;">
+                        <span data-icon="github"></span>
+                        <span>GitHub Profile</span>
+                    </a>
+                    <a href="https://github.com/alexmorgan-dev/student-skill-portal" target="_blank" rel="noopener noreferrer" style="display:flex; align-items:center; gap:0.4rem;">
+                        <span data-icon="folder-git"></span>
+                        <span>Repository</span>
+                    </a>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <div>© 2026 SkillSync System • Designed for Academic & Employability Excellence.</div>
+                <div>Connected to University Credential Registry • Verified SHA-256 Ledger</div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="js/icons.js"></script>
+    <script src="js/data.js"></script>
+    <script src="js/radar.js"></script>
+    <script src="js/assessment.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
